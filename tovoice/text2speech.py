@@ -17,7 +17,9 @@ def run(emailText):
     # Build the voice request, select the language code ("en-US") and the ssml
     # voice gender ("neutral")
     voice = texttospeech.VoiceSelectionParams(
-        language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+        language_code="en-GB",
+        name='en-GB-Wavenet-B',
+        ssml_gender=texttospeech.SsmlVoiceGender.MALE
     )
 
     # Select the type of audio file you want returned

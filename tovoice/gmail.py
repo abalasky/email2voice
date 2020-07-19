@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 from apiclient import errors
 import base64
 import email
+from bs4 import BeautifulSoup
 
 
 
@@ -101,23 +102,49 @@ def check_email():
 
     gmail = log_in()
 
+    #Get list of all emails
     emails = gmail.users().messages().list(userId='me').execute()
 
+    #Get email
     targetId = emails['messages'][1]['id']
 
+    #Query for specific email
     message = gmail.users().messages().get(userId='me', id=targetId, format='full').execute()
 
 
     okText = base64.urlsafe_b64decode(message['payload']['parts'][0]['body']['data'])
 
-    print(message['payload']['parts'][2]['mimeType'])
+    try:
+        msgBytes = message['payload']['parts'][0]['body']['data']
+        cleanBytes = msgBytes.replace('-', '+') #neccessary for b64->utf-8 conv
+        cleanBytes = cleanBytes.replace('_','/')
+        cleanTwo = base64.b64decode(bytes(cleanBytes,'utf-8')) #works
 
+        cleanThree = cleanTwo.decode('unicode_escape')
+        print(type(cleanThree))
 
+        with open('email.txt', 'w+') as file:
+            file.write(cleanThree)
+            file.close()
+
+    except Exception as e :
+        print(e)
     # try:
     #     message = service.users().messages().get(userId='me', id=msg_id).execute()
     # except e:
     #     print("error")
 
+import re
+def escape_ansi(line):
+    ansi_escape =re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+    return ansi_escape.sub('', line)
+
+def parseLinks(text):
+    """
+    Parse links out of email body
+    """
+
+    pass
 
 if __name__ == '__main__':
     check_email()

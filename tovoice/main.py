@@ -3,12 +3,16 @@ from text2speech import run
 
 def main():
 
-    with open("fortune.txt") as file:
+    with open("email_clean.txt") as file:
         data = file.read().replace('\n', '')
 
-    print(type(data))
-    print(data)
-    run(data)
+    with open('validate.txt', 'w+') as file:
+        file.write(data)
+        file.close()
+
+    data_limit = data[0:5000]
+    run(data_limit)
+
 
 if __name__ == "__main__":
     main()
